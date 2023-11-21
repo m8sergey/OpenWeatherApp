@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">OpenWeatherApp</string>
+    <string name="country_code_hint">Code</string>
+    <string name="city_hint">City</string>
+    <string name="search">Search</string>
+    <string name="location_name_template" translatable="false">%s, %s</string>
+    <string name="temperature_template">Temperature: %.2f°C</string>
+    <string name="humidity_template">Humidity: %d%%</string>
+    <string name="hot_found_message">Not found!</string>
+    <string name="invalid_input_message">Invalid input!</string>
+</resources>

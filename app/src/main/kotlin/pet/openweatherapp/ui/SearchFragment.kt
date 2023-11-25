@@ -61,11 +61,8 @@ class SearchFragment : Fragment() {
                             ).addToBackStack(null).commit()
                     } catch (e: Exception) {
                         Log.wtf(javaClass.simpleName, e)
-                        val a = Snackbar.make(
-                            binding.root,
-                            R.string.hot_found_message,
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        Snackbar.make(binding.root, R.string.hot_found_message, Snackbar.LENGTH_SHORT)
+                            .show()
                     }
 
                     binding.loader.isVisible = false

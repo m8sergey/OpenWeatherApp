@@ -2,6 +2,7 @@ package pet.openweatherapp.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDateTime
 
 @Parcelize
 data class WeatherForecast(
@@ -9,5 +10,6 @@ data class WeatherForecast(
     val countryCode: String,
     val weatherDescription: String,
     val temperature: Double,
-    val humidity: Int
+    val humidity: Int,
+    val dateTime: LocalDateTime
 ) : Parcelable

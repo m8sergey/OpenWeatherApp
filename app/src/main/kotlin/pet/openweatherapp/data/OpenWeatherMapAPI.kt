@@ -11,4 +11,11 @@ interface OpenWeatherMapAPI {
         @Query("appid") appId: String
     ): WeatherForecastResponse
 
+    @GET("forecast?units=metric")
+    suspend fun getForecast(
+        @Query("q") location: String,
+        @Query("appid") appId: String
+    ): ForecastResponse
+
+
 }

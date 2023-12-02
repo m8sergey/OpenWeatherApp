@@ -41,6 +41,9 @@ class WeatherForecastFragment : Fragment() {
             else
                 requireArguments().getParcelable(SearchFragment.WEATHER_KEY)
 
+        val searchItem = requireArguments().getString(SearchFragment.SEARCH_KEY, "")
+        Log.wtf(javaClass.simpleName, searchItem)
+
         currentWeather?.let {
             binding.locationName.text = getString(R.string.location_name_template).format(it.cityName, it.countryCode)
             binding.weatherDescription.text = it.weatherDescription.replaceFirstChar { it.titlecase() }
@@ -49,7 +52,7 @@ class WeatherForecastFragment : Fragment() {
 
             scope.launch {
                 try {
-                    adapter.updateForcaset(repository.getForecast(it.cityName, it.countryCode))
+                    adapter.updateForecast(repository.getForecast(it.cityName, it.countryCode))
                 } catch (e: Exception) {
                     Log.wtf(javaClass.simpleName, e)
                     Snackbar.make(binding.root, R.string.hot_found_message, Snackbar.LENGTH_SHORT)

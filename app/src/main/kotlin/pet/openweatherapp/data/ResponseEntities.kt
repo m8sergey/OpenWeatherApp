@@ -3,7 +3,7 @@ package pet.openweatherapp.data
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
-data class WeatherForecastResponse(
+data class WeatherResponse(
     val weather: List<WeatherItem>,
     val main: Main,
     @SerializedName("name") val cityName: String?,
@@ -18,4 +18,4 @@ data class WeatherForecastResponse(
 
 }
 
-data class ForecastResponse(val list: List<WeatherForecastResponse>)
+data class ForecastResponse(val list: List<WeatherResponse>)

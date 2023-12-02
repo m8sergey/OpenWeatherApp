@@ -12,7 +12,7 @@ import java.time.format.FormatStyle
 class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
     private var forecast: List<WeatherForecast> = emptyList()
 
-    fun  updateForcaset(forecast: List<WeatherForecast>) {
+    fun updateForecast(forecast: List<WeatherForecast>) {
         this.forecast = forecast
         notifyDataSetChanged() // обновляет всю view
     }
@@ -47,6 +47,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>
                 .context
                 .getString(R.string.humidity_template)
                 .format(weather.humidity)
+            binding.weatherIcon.setImageBitmap(weather.icon)
         }
     }
 }

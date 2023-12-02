@@ -1,5 +1,6 @@
 package pet.openweatherapp.data
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
@@ -11,5 +12,6 @@ data class WeatherForecast(
     val weatherDescription: String,
     val temperature: Double,
     val humidity: Int,
-    val dateTime: LocalDateTime
+    val dateTime: LocalDateTime,
+    val icon: Bitmap
 ) : Parcelable

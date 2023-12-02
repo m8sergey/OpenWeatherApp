@@ -9,7 +9,7 @@ interface OpenWeatherMapAPI {
     suspend fun getWeather(
         @Query("q") location: String,
         @Query("appid") appId: String
-    ): WeatherForecastResponse
+    ): WeatherResponse
 
     @GET("forecast?units=metric")
     suspend fun getForecast(

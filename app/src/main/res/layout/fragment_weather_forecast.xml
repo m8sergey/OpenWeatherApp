@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/forecast"
                 android:textSize="22sp"
@@ -65,6 +65,7 @@
                 android:nestedScrollingEnabled="true"
                 android:overScrollMode="never"
                 android:padding="8dp"
+                android:layout_marginHorizontal="4dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_forecast" />
 

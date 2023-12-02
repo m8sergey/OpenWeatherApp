@@ -22,6 +22,7 @@ class SearchFragment : Fragment() {
 
     companion object {
         const val WEATHER_KEY = "weather"
+        const val SEARCH_KEY = "search"
     }
 
     override fun onCreateView(
@@ -37,6 +38,7 @@ class SearchFragment : Fragment() {
         binding.btnSearch.setOnClickListener {
             val city = binding.cityInput.text.toString()
             val countryCode = binding.countryCodeInput.text.toString()
+            val searchItem = binding.spinner.selectedItem.toString()///
 
             if (city.isNotBlank() &&
                 !city.contains(Regex(".*\\d+.*")) &&
@@ -56,6 +58,7 @@ class SearchFragment : Fragment() {
                                 WeatherForecastFragment().also { f ->
                                     f.arguments = Bundle().also { b ->
                                         b.putParcelable(WEATHER_KEY, currentWeather)
+                                        b.putString(SEARCH_KEY, searchItem)
                                     }
                                 }
                             ).addToBackStack(null).commit()

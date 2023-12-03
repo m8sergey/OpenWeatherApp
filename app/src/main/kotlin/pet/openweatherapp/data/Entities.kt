@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 @Parcelize
-data class WeatherForecast(
+data class Weather(
     val cityName: String,
     val countryCode: String,
     val weatherDescription: String,
@@ -13,3 +13,8 @@ data class WeatherForecast(
     val humidity: Int,
     val dateTime: LocalDateTime
 ) : Parcelable
+
+data class Location(
+    val countryCode: String,
+    val cityName: String
+)

@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.data.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -9,7 +9,7 @@ interface OpenWeatherMapAPI {
     suspend fun getWeather(
         @Query("q") location: String,
         @Query("appid") appId: String
-    ): WeatherForecastResponse
+    ): WeatherResponse
 
     @GET("forecast?units=metric")
     suspend fun getForecast(

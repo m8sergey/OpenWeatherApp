@@ -85,6 +85,9 @@ class SearchFragment : Fragment() {
 
         binding.countryCodeInput.addTextChangedListener {
             binding.countryCodeInputLayout.isErrorEnabled = false
+            scope.launch {
+                Log.d("WeatherFragment", repository.searchCountries(it.toString()).toString())
+            }
         }
     }
 }

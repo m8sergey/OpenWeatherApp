@@ -5,13 +5,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import pet.openweatherapp.R
+import pet.openweatherapp.data.Location
 import pet.openweatherapp.data.WeatherRepository
 import pet.openweatherapp.databinding.FragmentSearchBinding
 
@@ -37,6 +43,7 @@ class SearchFragment : Fragment() {
         binding.btnSearch.setOnClickListener {
             val city = binding.cityInput.text.toString()
             val countryCode = binding.countryCodeInput.text.toString()
+             
 
             if (city.isNotBlank() &&
                 !city.contains(Regex(".*\\d+.*")) &&
@@ -61,7 +68,11 @@ class SearchFragment : Fragment() {
                             ).addToBackStack(null).commit()
                     } catch (e: Exception) {
                         Log.wtf(javaClass.simpleName, e)
-                        Snackbar.make(binding.root, R.string.hot_found_message, Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            binding.root,
+                            R.string.hot_found_message,
+                            Snackbar.LENGTH_SHORT
+                        )
                             .show()
                     }
 
@@ -79,14 +90,43 @@ class SearchFragment : Fragment() {
             }
         }
 
-        binding.cityInput.addTextChangedListener {
-            binding.cityInputLayout.isErrorEnabled = false
+
+        binding.countryCodeInput.apply {
+            addTextChangedListener {
+                binding.countryCodeInputLayout.isErrorEnabled = false
+            }
+            configureInput { it.countryCode }
         }
 
-        binding.countryCodeInput.addTextChangedListener {
-            binding.countryCodeInputLayout.isErrorEnabled = false
+        binding.cityInput.apply {
+            addTextChangedListener {
+                binding.cityInputLayout.isErrorEnabled = false
+            }
+            configureInput { it.cityName }
+        }
+    }
+
+    private fun MaterialAutoCompleteTextView.configureInput(map: (Location) -> String) {
+        fun createAdapter(objects: List<String>) = setAdapter(
+            SimpleAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                objects
+            )
+        )
+
+        createAdapter(listOf(getString(R.string.loading))) // для того чтобы авт. дополнение работало с первого символа - нужно какое то дефолтное значени
+
+        addTextChangedListener {
             scope.launch {
-                Log.d("WeatherFragment", repository.searchCountries(it.toString()).toString())
+                repository.searchLocations(
+                    countryQuery = binding.countryCodeInput.text.toString().trim(),
+                    cityQuery = binding.cityInput.text.toString().trim()
+                )
+                    .map(map)
+                    .distinct()
+                    .let { createAdapter(it) }
+
             }
         }
     }

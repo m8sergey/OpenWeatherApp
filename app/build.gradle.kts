@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -17,9 +19,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ksp.arg("room.schemaLocation", "$projectDir/schemas")
+
     }
 
     buildTypes {
+        val token = Properties().let {
+            // do not forget to create app.properties with your own API key
+            it.load(file("./app.properties").inputStream())
+            it.getProperty("token")
+        }
+        all {
+            buildConfigField("String", "API_KEY", "\"$token\"")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -37,6 +51,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

@@ -1,22 +1,29 @@
 package pet.openweatherapp.data.db
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
 interface WeatherDAO {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertLocation(location: DBLocation): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWeather(weather: List<DBWeather>)
 
-    @Delete
-    suspend fun deleteLocation(location: DBLocation)
+    @Query(
+        """
+            delete from Weather 
+            where countryCode = :countryCode and cityName = :cityName
+        """
+    )
+    suspend fun deleteLocationWeather(countryCode: String, cityName: String)
 
-    @Query("select * from Location")
-    suspend fun getAllLocation(): List<DBLocation>
-
-    @Query("select * from Location where countryCode like '%'||:query||'%'")
-    suspend fun searchByCountry(query: String): List<DBLocation>
+    @Query(
+        """
+            select * from Weather 
+            where countryCode = :countryCode and cityName = :cityName
+            order by dateTime
+        """
+    )
+    suspend fun getLocationWeather(countryCode: String, cityName: String): List<DBWeather>
 }

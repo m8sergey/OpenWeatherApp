@@ -5,10 +5,12 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import pet.openweatherapp.BuildConfig
 import pet.openweatherapp.OpenWeatherApp
 import pet.openweatherapp.data.api.OpenWeatherMapAPI
 import pet.openweatherapp.data.api.WeatherResponse
 import pet.openweatherapp.data.db.DBLocation
+import pet.openweatherapp.data.db.DBWeather
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
@@ -17,8 +19,6 @@ import java.time.ZoneId
 
 class WeatherRepository {
     companion object {
-        private val appID = "1ee7cd666f11e032c15527cac5e472d0"
-
         private val api: OpenWeatherMapAPI = Retrofit.Builder()
             .baseUrl("https://api.openweathermap.org/data/2.5/")
             .addConverterFactory(
@@ -40,12 +40,13 @@ class WeatherRepository {
             .create(OpenWeatherMapAPI::class.java)
     }
 
-    private val weatherDao = OpenWeatherApp.db.weatherDAO()
+    private val locationDao = OpenWeatherApp.db.locationDAO()
+    private val weatheDao = OpenWeatherApp.db.weatherDAO()
 
-    private fun WeatherResponse.toWeather() =
+    private fun WeatherResponse.toWeather(cityName: String = "", countryCode: String = "") =
         Weather(
-            cityName = cityName.orEmpty(),
-            countryCode = sys.countryCode.orEmpty(),
+            cityName = this.cityName ?: cityName,
+            countryCode = sys.countryCode ?: countryCode,
             weatherDescription = weather.first().description,
             temperature = main.temp,
             humidity = main.humidity,
@@ -54,23 +55,25 @@ class WeatherRepository {
 
     suspend fun getCurrentWeather(city: String, countryCode: String): Weather =
         withContext(Dispatchers.IO) {
-            api.getWeather("$city,$countryCode", appID)
+            api.getWeather("$city,$countryCode", BuildConfig.API_KEY)
                 .toWeather()
                 .also {
-                    weatherDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
-                        .also {
-                            Log.d("Repository", "Insert DBLocation with id=$it")
-                        }
+                    locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
                 }
         }
 
-    suspend fun searchCountries(query: String) = withContext(Dispatchers.IO) {
-        weatherDao.searchByCountry(query).map { it.location }
-    }
-
     suspend fun getForecast(city: String?, countryCode: String?): List<Weather> =
         withContext(Dispatchers.IO) {
-            api.getForecast("$city,$countryCode", appID).list.map { it.toWeather() }
+            val response = api.getForecast("$city,$countryCode", BuildConfig.API_KEY)
+            response.list.map {
+                it.toWeather(response.city.name, response.city.country)
+            }.also { weatheDao.insertWeather(it.map { DBWeather(it) }) }
+        }
+
+    suspend fun searchLocations(countryQuery: String, cityQuery: String) =
+        withContext(Dispatchers.IO) {
+            locationDao.searchLocations(countryQuery, cityQuery)
+                .map { it.location }
         }
 }
 

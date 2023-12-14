@@ -18,4 +18,12 @@ data class WeatherResponse(
 
 }
 
-data class ForecastResponse(val list: List<WeatherResponse>)
+data class ForecastResponse(
+    val list: List<WeatherResponse>,
+    val city: City
+) {
+    data class City(
+        val name: String,
+        val country: String
+    )
+}

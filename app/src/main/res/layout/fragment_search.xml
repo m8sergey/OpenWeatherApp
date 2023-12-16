@@ -19,6 +19,25 @@
         android:src="@drawable/closed_umbrella" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/country_code_input_layout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/city_input_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/country_code_hint"
+        app:boxStrokeColor="@color/text_input_border">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/country_code_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:minWidth="120dp"
+            android:padding="8dp"
+            tools:text="RU" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/city_input_layout"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="wrap_content"
@@ -27,29 +46,14 @@
         android:hint="@string/city_hint"
         app:boxStrokeColor="@color/text_input_border">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/city_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:completionThreshold="1"
             android:minWidth="120dp"
+            android:padding="8dp"
             tools:text="Moscow" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/country_code_input_layout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:hint="@string/country_code_hint"
-        app:boxStrokeColor="@color/text_input_border">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/country_code_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="120dp"
-            tools:text="RU" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Spinner
@@ -77,6 +81,5 @@
         android:layout_marginTop="14dp"
         android:visibility="gone"
         tools:visibility="visible" />
-
 
 </LinearLayout>

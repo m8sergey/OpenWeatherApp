@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import pet.openweatherapp.R
-import pet.openweatherapp.data.WeatherForecast
+import pet.openweatherapp.data.Weather
 import pet.openweatherapp.data.WeatherRepository
 import pet.openweatherapp.databinding.FragmentWeatherForecastBinding
 
@@ -37,7 +37,7 @@ class WeatherForecastFragment : Fragment() {
 
         val currentWeather =
             if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU)
-                requireArguments().getParcelable(SearchFragment.WEATHER_KEY, WeatherForecast::class.java)
+                requireArguments().getParcelable(SearchFragment.WEATHER_KEY, Weather::class.java)
             else
                 requireArguments().getParcelable(SearchFragment.WEATHER_KEY)
 

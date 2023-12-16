@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.data.api
 
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
@@ -18,4 +18,12 @@ data class WeatherResponse(
 
 }
 
-data class ForecastResponse(val list: List<WeatherResponse>)
+data class ForecastResponse(
+    val list: List<WeatherResponse>,
+    val city: City
+) {
+    data class City(
+        val name: String,
+        val country: String
+    )
+}

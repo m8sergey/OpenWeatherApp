@@ -4,15 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import pet.openweatherapp.R
-import pet.openweatherapp.data.WeatherForecast
+import pet.openweatherapp.data.Weather
 import pet.openweatherapp.databinding.ItemForecastBinding
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
-    private var forecast: List<WeatherForecast> = emptyList()
+    private var forecast: List<Weather> = emptyList()
 
-    fun updateForecast(forecast: List<WeatherForecast>) {
+    fun  updateForcaset(forecast: List<Weather>) {
         this.forecast = forecast
         notifyDataSetChanged() // обновляет всю view
     }
@@ -36,7 +36,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>
         //DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         }
 
-        fun bind(weather: WeatherForecast) {
+        fun bind(weather: Weather) {
             binding.dateTime.text = weather.dateTime.format(formatter)
             binding.itemWeatherDescription.text = weather.weatherDescription.replaceFirstChar { it.titlecase() }
             binding.itemTemperature.text = binding.root

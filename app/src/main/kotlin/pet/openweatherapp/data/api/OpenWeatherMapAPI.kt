@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.data.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query

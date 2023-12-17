@@ -21,7 +21,6 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/country_code_input_layout"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-        android:id="@+id/city_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="@string/country_code_hint"

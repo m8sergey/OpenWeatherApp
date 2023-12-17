@@ -3,7 +3,6 @@ package pet.openweatherapp.ui
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,19 +41,21 @@ class WeatherForecastFragment : Fragment() {
                 requireArguments().getParcelable(SearchFragment.WEATHER_KEY)
 
         val searchItem = requireArguments().getString(SearchFragment.SEARCH_KEY, "")
-        Log.wtf(javaClass.simpleName, searchItem)
 
         currentWeather?.let {
-            binding.locationName.text = getString(R.string.location_name_template).format(it.cityName, it.countryCode)
-            binding.weatherDescription.text = it.weatherDescription.replaceFirstChar { it.titlecase() }
-            binding.temperature.text = getString(R.string.temperature_template).format(it.temperature)
+            binding.locationName.text =
+                getString(R.string.location_name_template).format(it.cityName, it.countryCode)
+            binding.weatherDescription.text =
+                it.weatherDescription.replaceFirstChar { it.titlecase() }
+            binding.temperature.text =
+                getString(R.string.temperature_template).format(it.temperature)
             binding.humidity.text = getString(R.string.humidity_template).format(it.humidity)
+            binding.currentWeatherIcon.setImageBitmap(it.icon)
 
             scope.launch {
                 try {
                     adapter.updateForecast(repository.getForecast(it.cityName, it.countryCode))
                 } catch (e: Exception) {
-                    Log.wtf(javaClass.simpleName, e)
                     Snackbar.make(binding.root, R.string.hot_found_message, Snackbar.LENGTH_SHORT)
                         .show()
                 }
@@ -62,8 +63,6 @@ class WeatherForecastFragment : Fragment() {
                 binding.loader.isVisible = false // gone
             }
         }
-
-
 
 
     }

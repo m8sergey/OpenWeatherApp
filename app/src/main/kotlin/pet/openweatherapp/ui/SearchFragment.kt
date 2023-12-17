@@ -1,21 +1,20 @@
 package pet.openweatherapp.ui
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import pet.openweatherapp.OpenWeatherApp
 import pet.openweatherapp.R
 import pet.openweatherapp.data.Location
 import pet.openweatherapp.data.WeatherRepository
@@ -45,7 +44,6 @@ class SearchFragment : Fragment() {
             val city = binding.cityInput.text.toString()
             val countryCode = binding.countryCodeInput.text.toString()
             val searchItem = binding.spinner.selectedItem.toString()///
-
             if (city.isNotBlank() &&
                 !city.contains(Regex(".*\\d+.*")) &&
                 countryCode.isNotBlank() &&
@@ -69,13 +67,11 @@ class SearchFragment : Fragment() {
                                 }
                             ).addToBackStack(null).commit()
                     } catch (e: Exception) {
-                        Log.wtf(javaClass.simpleName, e)
                         Snackbar.make(
                             binding.root,
                             R.string.hot_found_message,
                             Snackbar.LENGTH_SHORT
-                        )
-                            .show()
+                        ).show()
                     }
 
                     binding.loader.isVisible = false
@@ -83,12 +79,10 @@ class SearchFragment : Fragment() {
                 }
             } else {
                 val errorMessage = getString(R.string.invalid_input_message)
-                if (city.isBlank() ||
-                    city.contains(Regex(".*\\d+.*"))
-                ) binding.cityInputLayout.error = errorMessage
-                if (countryCode.isBlank() ||
-                    countryCode.contains(Regex(".*\\d+.*"))
-                ) binding.countryCodeInputLayout.error = errorMessage
+                if (city.isBlank() || city.contains(Regex(".*\\d+.*")))
+                    binding.cityInputLayout.error = errorMessage
+                if (countryCode.isBlank() || countryCode.contains(Regex(".*\\d+.*")))
+                    binding.countryCodeInputLayout.error = errorMessage
             }
         }
 

@@ -13,7 +13,7 @@ data class Weather(
     val temperature: Double,
     val humidity: Int,
     val dateTime: LocalDateTime,
-    val icon: Bitmap
+    val icon: Bitmap?
 ) : Parcelable
 
 data class Location(

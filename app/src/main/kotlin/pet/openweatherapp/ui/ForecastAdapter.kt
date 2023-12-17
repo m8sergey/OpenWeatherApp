@@ -12,7 +12,7 @@ import java.time.format.FormatStyle
 class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
     private var forecast: List<Weather> = emptyList()
 
-    fun  updateForcaset(forecast: List<Weather>) {
+    fun updateForecast(forecast: List<Weather>) {
         this.forecast = forecast
         notifyDataSetChanged() // обновляет всю view
     }

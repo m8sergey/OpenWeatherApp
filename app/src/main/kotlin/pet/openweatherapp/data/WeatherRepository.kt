@@ -14,13 +14,14 @@ import pet.openweatherapp.data.db.DBLocation
 import pet.openweatherapp.data.db.DBWeather
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
+import java.net.URL
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 const val API_URL = "https://api.openweathermap.org/data/2.5/"
 const val IMAGE_URL = "https://openweathermap.org/img/wn/"
-const val APP_ID = "1ee7cd666f11e032c15527cac5e472d0"
 
 class WeatherRepository {
     companion object {
@@ -62,19 +63,37 @@ class WeatherRepository {
 
     suspend fun getCurrentWeather(city: String, countryCode: String): Weather =
         withContext(Dispatchers.IO) {
-            api.getWeather("$city,$countryCode", BuildConfig.API_KEY)
-                .toWeather()
-                .also {
-                    locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
-                }
+            Log.wtf("now time", LocalDateTime.now().toString())
+            Log.wtf("DB time", "${weatheDao.getLocationWeather(countryCode, city).first().weather.dateTime}")
+            if (OpenWeatherApp.networkConnection.activeNetwork != null) {
+                api.getWeather("$city,$countryCode", BuildConfig.API_KEY)
+                    .toWeather()
+                    .also {
+                        locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
+                    }
+            } else if (
+                weatheDao.getLocationWeather(countryCode, city).first().weather.dateTime > LocalDateTime.now()
+            ) {
+                weatheDao.getLocationWeather(countryCode, city).first().weather
+            } else {
+                throw Exception()
+            }
         }
 
     suspend fun getForecast(city: String?, countryCode: String?): List<Weather> =
         withContext(Dispatchers.IO) {
-            val response = api.getForecast("$city,$countryCode", BuildConfig.API_KEY)
-            response.list.map {
-                it.toWeather(response.city.name, response.city.country)
-            }.also { weatheDao.insertWeather(it.map { DBWeather(it) }) }
+            if (OpenWeatherApp.networkConnection.activeNetwork != null) {
+                api.getForecast("$city,$countryCode", BuildConfig.API_KEY).run {
+                    weatheDao.deleteLocationWeather(countryCode ?: "", city ?: "") // delete old data
+                    list.map {
+                        it.toWeather(this.city.name, this.city.country)
+                    }.also { weather -> weatheDao.insertWeather(weather.map { DBWeather(it) }) }
+                }
+            } else if (weatheDao.getLocationWeather(countryCode!!, city!!).first().weather.dateTime > LocalDateTime.now()) {
+                weatheDao.getLocationWeather(countryCode, city).map { it.weather }
+            } else {
+                throw Exception()
+            }
         }
 
     suspend fun searchLocations(countryQuery: String, cityQuery: String) =
@@ -82,6 +101,8 @@ class WeatherRepository {
             locationDao.searchLocations(countryQuery, cityQuery)
                 .map { it.location }
         }
+
+
 }
 
 // Промежуточный класс для работы с API

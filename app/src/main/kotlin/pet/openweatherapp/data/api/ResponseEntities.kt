@@ -27,3 +27,7 @@ data class ForecastResponse(
         val country: String
     )
 }
+
+data class HistoricalWeatherResponse(
+    val dummy: String // TODO real fields
+)

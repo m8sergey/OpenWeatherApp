@@ -1,9 +1,10 @@
 package pet.openweatherapp.data
 
-import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import pet.openweatherapp.BuildConfig
 import pet.openweatherapp.OpenWeatherApp
@@ -16,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.Locale
 
 class WeatherRepository {
     companion object {
@@ -41,7 +43,7 @@ class WeatherRepository {
     }
 
     private val locationDao = OpenWeatherApp.db.locationDAO()
-    private val weatheDao = OpenWeatherApp.db.weatherDAO()
+    private val weatherDao = OpenWeatherApp.db.weatherDAO()
 
     private fun WeatherResponse.toWeather(cityName: String = "", countryCode: String = "") =
         Weather(
@@ -53,9 +55,11 @@ class WeatherRepository {
             dateTime = date
         )
 
+    private val currentLang get() = Locale.getDefault().language
+
     suspend fun getCurrentWeather(city: String, countryCode: String): Weather =
         withContext(Dispatchers.IO) {
-            api.getWeather("$city,$countryCode", BuildConfig.API_KEY)
+            api.getWeather("$city,$countryCode", currentLang, BuildConfig.API_KEY)
                 .toWeather()
                 .also {
                     locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
@@ -64,16 +68,36 @@ class WeatherRepository {
 
     suspend fun getForecast(city: String?, countryCode: String?): List<Weather> =
         withContext(Dispatchers.IO) {
-            val response = api.getForecast("$city,$countryCode", BuildConfig.API_KEY)
+            val response = api.getForecast("$city,$countryCode", currentLang, BuildConfig.API_KEY)
             response.list.map {
                 it.toWeather(response.city.name, response.city.country)
-            }.also { weatheDao.insertWeather(it.map { DBWeather(it) }) }
+            }.also { weatherDao.insertWeather(it.map { DBWeather(it) }) }
         }
 
     suspend fun searchLocations(countryQuery: String, cityQuery: String) =
         withContext(Dispatchers.IO) {
             locationDao.searchLocations(countryQuery, cityQuery)
                 .map { it.location }
+        }
+
+    suspend fun getHistoricalWeather(latitude: Double, longitude: Double, startDateTime: LocalDateTime): List<Weather> =
+        withContext(Dispatchers.IO) {
+            List(9) { (it + 1) * 3 } // offsets in hours: 3, 6, 9, ...
+                .map { startDateTime.minusHours(it.toLong()) }
+                .map {
+                    val second = it.atZone(ZoneId.systemDefault()).toEpochSecond()
+                    async {
+                        api.getHistoricalData(
+                            latitude,
+                            longitude,
+                            second,
+                            currentLang,
+                            BuildConfig.API_KEY
+                        )
+                    }
+                }.awaitAll()
+                .map { /* TODO map to Weather entity */ }
+            emptyList()
         }
 }
 

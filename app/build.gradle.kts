@@ -4,7 +4,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14" // должна совподать с версией котлина
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14" // must match the Kotlin version
 }
 
 android {
@@ -17,19 +17,17 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         ksp.arg("room.schemaLocation", "$projectDir/schemas")
-
     }
 
     buildTypes {
         val token = Properties().let {
-            // do not forget to create app.properties with your own API key
+            // create app.properties with your own API key
             it.load(file("./app.properties").inputStream())
             it.getProperty("token")
         }
+
         all {
             buildConfigField("String", "API_KEY", "\"$token\"")
         }
@@ -42,13 +40,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
@@ -57,9 +58,15 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // ViewModel & LiveData
+    val lifecycleVersion = "2.6.2"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
 
     // Coroutines
     val coroutinesVersion = "1.7.3"

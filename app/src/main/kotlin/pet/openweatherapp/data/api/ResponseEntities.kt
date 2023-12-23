@@ -15,7 +15,6 @@ data class WeatherResponse(
     data class Main(val temp: Double, val humidity: Int)
 
     data class Sys(@SerializedName("country") val countryCode: String?)
-
 }
 
 data class ForecastResponse(
@@ -27,3 +26,7 @@ data class ForecastResponse(
         val country: String
     )
 }
+
+data class HistoricalWeatherResponse(
+    val dummy: String // TODO real fields
+)

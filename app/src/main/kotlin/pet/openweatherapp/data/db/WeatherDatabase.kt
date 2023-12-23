@@ -11,6 +11,8 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import java.io.ByteArrayOutputStream
+import pet.openweatherapp.data.db.dao.LocationDAO
+import pet.openweatherapp.data.db.dao.WeatherDAO
 import java.time.LocalDateTime
 
 @Database(

@@ -1,10 +1,10 @@
-package pet.openweatherapp.ui
+package pet.openweatherapp.ui.weather
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import pet.openweatherapp.R
-import pet.openweatherapp.data.Weather
+import pet.openweatherapp.domain.Weather
 import pet.openweatherapp.databinding.ItemForecastBinding
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -14,7 +14,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>
 
     fun updateForecast(forecast: List<Weather>) {
         this.forecast = forecast
-        notifyDataSetChanged() // обновляет всю view
+        notifyDataSetChanged() // Updates the entire View
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
@@ -30,10 +30,10 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>
     override fun getItemCount() = forecast.size
 
     class ForecastViewHolder(private val binding: ItemForecastBinding) : RecyclerView.ViewHolder(binding.root) {
-        companion object { // в компаньоне что бы создался один раз
+        companion object { // in the companion so that it would be created once
             private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-        // Можно указать конктретный паттер самостоятельно, либо взять настройки устройсва
-        //DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        // А specific pattern, or take the device settings
+        // DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         }
 
         fun bind(weather: Weather) {

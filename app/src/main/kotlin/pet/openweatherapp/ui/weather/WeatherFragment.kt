@@ -1,4 +1,4 @@
-package pet.openweatherapp.ui
+package pet.openweatherapp.ui.weather
 
 import android.os.Build
 import android.os.Build.VERSION_CODES
@@ -8,18 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import pet.openweatherapp.R
-import pet.openweatherapp.data.Weather
-import pet.openweatherapp.data.WeatherRepository
+import pet.openweatherapp.domain.Weather
 import pet.openweatherapp.databinding.FragmentWeatherForecastBinding
+import pet.openweatherapp.ui.search.SearchFragment
 
-class WeatherForecastFragment : Fragment() {
+class WeatherFragment : Fragment() {
     private lateinit var binding: FragmentWeatherForecastBinding
-    private val repository = WeatherRepository()
-    private val scope = MainScope()
+    private val viewModel: WeatherViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,28 +40,32 @@ class WeatherForecastFragment : Fragment() {
 
         val searchItem = requireArguments().getString(SearchFragment.SEARCH_KEY, "")
 
-        currentWeather?.let {
-            binding.locationName.text =
-                getString(R.string.location_name_template).format(it.cityName, it.countryCode)
-            binding.weatherDescription.text =
-                it.weatherDescription.replaceFirstChar { it.titlecase() }
-            binding.temperature.text =
-                getString(R.string.temperature_template).format(it.temperature)
-            binding.humidity.text = getString(R.string.humidity_template).format(it.humidity)
+        currentWeather?.let { weather ->
+            binding.locationName.text = getString(R.string.location_name_template).format(weather.cityName, weather.countryCode)
+            binding.weatherDescription.text = weather.weatherDescription.replaceFirstChar { it.titlecase() }
+            binding.temperature.text = getString(R.string.temperature_template).format(weather.temperature)
+            binding.humidity.text = getString(R.string.humidity_template).format(weather.humidity)
             binding.currentWeatherIcon.setImageBitmap(it.icon)
 
-            scope.launch {
-                try {
-                    adapter.updateForecast(repository.getForecast(it.cityName, it.countryCode))
-                } catch (e: Exception) {
-                    Snackbar.make(binding.root, R.string.hot_found_message, Snackbar.LENGTH_SHORT)
-                        .show()
-                }
-
-                binding.loader.isVisible = false // gone
+            viewModel.isLoading.observe(this.viewLifecycleOwner) {
+                binding.loader.isVisible = it
             }
-        }
 
+            viewModel.notFound.observe(this.viewLifecycleOwner) {
+                Snackbar.make(
+                    binding.root,
+                    R.string.hot_found_message,
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+
+            viewModel.forecast.observe(this.viewLifecycleOwner) {
+                adapter.updateForecast(it)
+            }
+
+            viewModel.getForecast(weather.countryCode, weather.cityName)
+
+        }
 
     }
 }

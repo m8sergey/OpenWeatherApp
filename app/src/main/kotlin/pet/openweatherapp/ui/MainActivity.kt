@@ -1,8 +1,9 @@
-package pet.openweatherapp
+package pet.openweatherapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import pet.openweatherapp.ui.SearchFragment
+import pet.openweatherapp.R
+import pet.openweatherapp.ui.search.SearchFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

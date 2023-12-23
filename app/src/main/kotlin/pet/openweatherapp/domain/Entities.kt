@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.domain
 
 import android.graphics.Bitmap
 import android.os.Parcelable

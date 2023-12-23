@@ -6,7 +6,7 @@
     <string name="search">Поиск</string>
     <string name="temperature_template">Температура: %.2f°C</string>
     <string name="humidity_template">Влажность: %d%%</string>
-    <string name="hot_found_message">Не найдено!</string>
+    <string name="hot_found_message">Не найдено: %s!</string>
     <string name="invalid_input_message">Неверный ввод!</string>
     <string name="forecast">Прогноз</string>
     <string name="loading">Загрузка...</string>

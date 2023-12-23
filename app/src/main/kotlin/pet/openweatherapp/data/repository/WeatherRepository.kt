@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.data.repository
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
@@ -8,6 +8,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import pet.openweatherapp.BuildConfig
 import pet.openweatherapp.OpenWeatherApp
+import pet.openweatherapp.domain.Location
+import pet.openweatherapp.domain.Weather
 import pet.openweatherapp.data.api.OpenWeatherMapAPI
 import pet.openweatherapp.data.api.WeatherResponse
 import pet.openweatherapp.data.db.DBLocation
@@ -25,27 +27,23 @@ class WeatherRepository {
             .baseUrl("https://api.openweathermap.org/data/2.5/")
             .addConverterFactory(
                 GsonConverterFactory.create(
-                    // Конвертер может принимать доп. объект gson, который можно применить для конф. доп. параметров
-                    // Для преобразования long в тип даты.
                     GsonBuilder().registerTypeAdapter(
                         LocalDateTime::class.java,
                         JsonDeserializer { json, _, _ ->
-                            Instant // отпечаток во времени. осолютное время
-                                .ofEpochSecond(json.asJsonPrimitive.asLong) // приметивный тип который приходит из json
-                                .atZone(ZoneId.systemDefault()) //
+                            Instant
+                                .ofEpochSecond(json.asJsonPrimitive.asLong)
+                                .atZone(ZoneId.systemDefault())
                                 .toLocalDateTime()
                         }
                     ).create()
                 )
-            )
-            .build()
-            .create(OpenWeatherMapAPI::class.java)
+            ).build().create(OpenWeatherMapAPI::class.java)
     }
 
     private val locationDao = OpenWeatherApp.db.locationDAO()
     private val weatherDao = OpenWeatherApp.db.weatherDAO()
 
-    private fun WeatherResponse.toWeather(cityName: String = "", countryCode: String = "") =
+    private fun WeatherResponse.toWeather(countryCode: String = "", cityName: String = "") =
         Weather(
             cityName = this.cityName ?: cityName,
             countryCode = sys.countryCode ?: countryCode,
@@ -57,7 +55,7 @@ class WeatherRepository {
 
     private val currentLang get() = Locale.getDefault().language
 
-    suspend fun getCurrentWeather(city: String, countryCode: String): Weather =
+    suspend fun getCurrentWeather(countryCode: String, city: String): Weather =
         withContext(Dispatchers.IO) {
             api.getWeather("$city,$countryCode", currentLang, BuildConfig.API_KEY)
                 .toWeather()
@@ -66,12 +64,12 @@ class WeatherRepository {
                 }
         }
 
-    suspend fun getForecast(city: String?, countryCode: String?): List<Weather> =
+    suspend fun getForecast(countryCode: String, city: String): List<Weather> =
         withContext(Dispatchers.IO) {
-            val response = api.getForecast("$city,$countryCode", currentLang, BuildConfig.API_KEY)
-            response.list.map {
-                it.toWeather(response.city.name, response.city.country)
-            }.also { weatherDao.insertWeather(it.map { DBWeather(it) }) }
+            api.getForecast("$city,$countryCode", currentLang, BuildConfig.API_KEY).run {
+                list.map { it.toWeather(this.city.country, this.city.name) }
+                    .also { weatherDao.insertWeather(it.map { weather -> DBWeather(weather) }) }
+            }
         }
 
     suspend fun searchLocations(countryQuery: String, cityQuery: String) =
@@ -80,7 +78,11 @@ class WeatherRepository {
                 .map { it.location }
         }
 
-    suspend fun getHistoricalWeather(latitude: Double, longitude: Double, startDateTime: LocalDateTime): List<Weather> =
+    suspend fun getHistoricalWeather(
+        latitude: Double,
+        longitude: Double,
+        startDateTime: LocalDateTime
+    ): List<Weather> =
         withContext(Dispatchers.IO) {
             List(9) { (it + 1) * 3 } // offsets in hours: 3, 6, 9, ...
                 .map { startDateTime.minusHours(it.toLong()) }
@@ -100,5 +102,3 @@ class WeatherRepository {
             emptyList()
         }
 }
-
-// Промежуточный класс для работы с API

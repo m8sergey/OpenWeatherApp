@@ -5,17 +5,15 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import pet.openweatherapp.data.Location
-import pet.openweatherapp.data.Weather
+import pet.openweatherapp.domain.Location
+import pet.openweatherapp.domain.Weather
 
 @Entity(
     tableName = "Location",
-//    indices = [Index("countryCode", "cityName", unique = true)],
-    primaryKeys = ["countryCode", "cityName"] // ключ сам по себе подразумевает что он уникальный
+    primaryKeys = ["countryCode", "cityName"]
 )
 data class DBLocation(
-    @Embedded val location: Location, // встраивает колонки из свойств класса Location
- //   @PrimaryKey(autoGenerate = true) val id: Long = 0 // -1 зарезервировано под отмену операции
+    @Embedded val location: Location
 )
 
 @Entity(
@@ -33,6 +31,5 @@ data class DBLocation(
 )
 data class DBWeather(
     @Embedded val weather: Weather,
-    // do we really need id?
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )

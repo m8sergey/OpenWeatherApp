@@ -5,7 +5,7 @@ import retrofit2.http.Query
 
 interface OpenWeatherMapAPI {
 
-    @GET("weather?units=metric") //?nits=metric - добавлен прямо сдесь т.к. этот query параметр не будет менятся
+    @GET("weather?units=metric")
     suspend fun getWeather(
         @Query("q") location: String,
         @Query("lang") lang: String = "en",

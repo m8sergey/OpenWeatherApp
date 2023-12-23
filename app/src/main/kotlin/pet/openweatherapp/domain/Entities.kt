@@ -1,4 +1,4 @@
-package pet.openweatherapp.data
+package pet.openweatherapp.domain
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

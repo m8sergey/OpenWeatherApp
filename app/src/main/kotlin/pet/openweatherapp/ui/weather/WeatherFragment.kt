@@ -3,6 +3,7 @@ package pet.openweatherapp.ui.weather
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,13 +40,14 @@ class WeatherFragment : Fragment() {
                 requireArguments().getParcelable(SearchFragment.WEATHER_KEY)
 
         val searchItem = requireArguments().getString(SearchFragment.SEARCH_KEY, "")
+        Log.wtf(javaClass.simpleName, searchItem)
 
         currentWeather?.let { weather ->
             binding.locationName.text = getString(R.string.location_name_template).format(weather.cityName, weather.countryCode)
             binding.weatherDescription.text = weather.weatherDescription.replaceFirstChar { it.titlecase() }
             binding.temperature.text = getString(R.string.temperature_template).format(weather.temperature)
             binding.humidity.text = getString(R.string.humidity_template).format(weather.humidity)
-            binding.currentWeatherIcon.setImageBitmap(it.icon)
+            binding.currentWeatherIcon.setImageBitmap(weather.icon)
 
             viewModel.isLoading.observe(this.viewLifecycleOwner) {
                 binding.loader.isVisible = it

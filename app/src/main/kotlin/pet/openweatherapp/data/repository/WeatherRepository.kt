@@ -74,17 +74,17 @@ class WeatherRepository {
                     locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
                 }
             Log.wtf("now time", LocalDateTime.now().toString())
-            Log.wtf("DB time", "${weatheDao.getLocationWeather(countryCode, city).first().weather.dateTime}")
+            Log.wtf("DB time", "${weatherDao.getLocationWeather(countryCode, city).first().weather.dateTime}")
             if (OpenWeatherApp.networkConnection.activeNetwork != null) {
-                api.getWeather("$city,$countryCode", BuildConfig.API_KEY)
+                api.getWeather("$city,$countryCode", currentLang, BuildConfig.API_KEY)
                     .toWeather()
                     .also {
                         locationDao.insertLocation(DBLocation(Location(it.countryCode, it.cityName)))
                     }
             } else if (
-                weatheDao.getLocationWeather(countryCode, city).first().weather.dateTime > LocalDateTime.now()
+                weatherDao.getLocationWeather(countryCode, city).first().weather.dateTime > LocalDateTime.now()
             ) {
-                weatheDao.getLocationWeather(countryCode, city).first().weather
+                weatherDao.getLocationWeather(countryCode, city).first().weather
             } else {
                 throw Exception()
             }
@@ -93,14 +93,14 @@ class WeatherRepository {
     suspend fun getForecast(countryCode: String, city: String): List<Weather> =
         withContext(Dispatchers.IO) {
             if (OpenWeatherApp.networkConnection.activeNetwork != null) {
-                api.getForecast("$city,$countryCode", BuildConfig.API_KEY).run {
-                    weatheDao.deleteLocationWeather(countryCode ?: "", city ?: "") // delete old data
+                api.getForecast("$city,$countryCode", currentLang, BuildConfig.API_KEY).run {
+                    weatherDao.deleteLocationWeather(countryCode, city) // delete old data
                     list.map {
                         it.toWeather(this.city.name, this.city.country)
-                    }.also { weather -> weatheDao.insertWeather(weather.map { DBWeather(it) }) }
+                    }.also { weather -> weatherDao.insertWeather(weather.map { DBWeather(it) }) }
                 }
-            } else if (weatheDao.getLocationWeather(countryCode!!, city!!).first().weather.dateTime > LocalDateTime.now()) {
-                weatheDao.getLocationWeather(countryCode, city).map { it.weather }
+            } else if (weatherDao.getLocationWeather(countryCode, city).first().weather.dateTime > LocalDateTime.now()) {
+                weatherDao.getLocationWeather(countryCode, city).map { it.weather }
             } else {
                 throw Exception()
             }

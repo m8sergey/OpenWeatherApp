@@ -23,12 +23,5 @@ class OpenWeatherApp : Application() {
 
         networkConnection = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
-
-//    if ((context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetwork != null) {
-//        Log.wtf("Net", "Connected")
-//    } else {
-//        Log.wtf("Net", "Disconnected")
-//    }
-
 }
 

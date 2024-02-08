@@ -21,6 +21,7 @@ class SearchFragment : Fragment() {
 
     companion object {
         const val WEATHER_KEY = "weather"
+        const val SEARCH_KEY = "search"
     }
 
     override fun onCreateView(
@@ -47,6 +48,8 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.currentWeather.observe(this.viewLifecycleOwner) { weather ->
+            val searchItem = binding.spinner.selectedItem.toString()
+
             parentFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(
@@ -54,6 +57,7 @@ class SearchFragment : Fragment() {
                     WeatherFragment().also { f ->
                         f.arguments = Bundle().also { b ->
                             b.putParcelable(WEATHER_KEY, weather)
+                            b.putString(SEARCH_KEY, searchItem)
                         }
                     }
                 ).addToBackStack(null).commit()
